@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from fastapi.responses import RedirectResponse
 from typing import Annotated
@@ -9,6 +9,7 @@ from starlette.status import HTTP_303_SEE_OTHER
 from datetime import datetime, timedelta, timezone
 import jwt
 from jwt.exceptions import InvalidTokenError
+from fastapi.templating import Jinja2Templates
 
 app = FastAPI()
 
@@ -17,6 +18,8 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 ALGORITHM = "HS256"
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+templates = Jinja2Templates(directory="templates")
 
 password_hash = PasswordHash.recommended()
 
@@ -84,6 +87,10 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
         data={"sub": user.username}, expires_delta=access_token_expires
     )
     return Token(access_token=access_token, token_type="bearer")
+
+@app.get('/signup')
+async def get_sign_up_page(request: Request):
+    return templates.TemplateResponse("signup.html", {"request": request})
 
 @app.post('/signup')
 async def sign_up_user(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
