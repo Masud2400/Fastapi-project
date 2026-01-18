@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, status, Request
+from fastapi import FastAPI, Depends, HTTPException, status, Request, Response
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from fastapi.responses import RedirectResponse
 from typing import Annotated
@@ -73,21 +73,45 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
+def verify_token(request: Request):
+    token = request.cookies.get("access_token")
+    if not token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="You are not autherised to enter this page"
+        )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)
+        username = payload.get("sub")
+        if username is None:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        return username
+    except Exception:
+        return RedirectResponse(url="/signin", status_code=HTTP_303_SEE_OTHER)
+
 @app.post('/token')
-async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],) -> Token:
+async def login_for_access_token(response: Response, form_data: Annotated[OAuth2PasswordRequestForm, Depends()],):
     user = authenticate_user(fake_db, form_data.password, form_data.username)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
-    return Token(access_token=access_token, token_type="bearer")
-
+    response = RedirectResponse(url="/dashboard", status_code=HTTP_303_SEE_OTHER)
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+        max_age=1800
+    )
+    return response
+    
 @app.get('/signup')
 async def get_sign_up_page(request: Request):
     return templates.TemplateResponse("signup.html", {"request": request})
@@ -95,10 +119,7 @@ async def get_sign_up_page(request: Request):
 @app.post('/signup')
 async def sign_up_user(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     if form_data.username in fake_db:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="User already exists",  
-        )
+        return RedirectResponse(url="/signin", status_code=HTTP_303_SEE_OTHER)
     hashed_password = get_password_hash(form_data.password)
     fake_db[form_data.username] = {
         "username": form_data.username,
@@ -106,32 +127,13 @@ async def sign_up_user(form_data: Annotated[OAuth2PasswordRequestForm, Depends()
     }
     with open (file_name, 'w') as file_json:
         json.dump(fake_db, file_json, indent=4)
-    return RedirectResponse(url='/signin/', status_code=HTTP_303_SEE_OTHER)
-
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="We could not validate your credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)
-        username = payload.get("sub")
-        if username is None:
-            raise credentials_exception
-        token_data = TokenData(username=username)
-    except InvalidTokenError:
-        raise credentials_exception
-    user = get_user(fake_db, username=token_data.username)
-    if user is None:
-        raise credentials_exception
-    return user
+    return RedirectResponse(url='/signin', status_code=HTTP_303_SEE_OTHER)
 
 @app.get("/signin")
-async def sign_in_user():
-    return {"Welcome to Sign-in page"}
+async def sign_in_user(request: Request):
+    return templates.TemplateResponse("signin.html", {"request": request})
 
-@app.get("/users/me", response_model=User)
-async def read_users_me(current_user: Annotated[User, Depends(get_current_user)]):
-    return current_user
-
+@app.get("/dashboard")
+async def get_dashboard(request: Request, username: Annotated[str, Depends(verify_token)]):    
+    return templates.TemplateResponse("dashboard.html", {"request": request, "username": username})
+        

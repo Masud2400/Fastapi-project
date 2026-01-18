@@ -2,5 +2,13 @@
     "Shomamat": {
         "username": "Shomamat",
         "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$lsorBo8swsYO9l3xwC4HcA$+VNJmQApqqNDd4LN1QnDBFtn38xv/jY5+9I6ykouYfk"
+    },
+    "Samuel": {
+        "username": "Samuel",
+        "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$a0G5QRoKl012QYx1i+fWrA$WV2aJWs/IRsbeF3ryaStUN6+OTNmCp6gLlM3tlUd64c"
+    },
+    "Mrsample": {
+        "username": "Mrsample",
+        "hashed_password": "$argon2id$v=19$m=65536,t=3,p=4$qt/UTTfKYYqtp1v8jkea6g$373vCNmqvDNPgA1z/b2+XMzxyrP+XqInAVIrYEtNWYE"
     }
 }

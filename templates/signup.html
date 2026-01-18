@@ -1,5 +1,54 @@
-<form action="/signup" method="post">
-    <input type="text" name="username" placeholder="Username" required>
-    <input type="password" name="password" placeholder="Password" required>
-    <button type="submit">Sign Up</button>
-</form>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background-color: #f0f2f5; }
+        .signup-container { background: white; padding: 2.5rem; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); width: 350px; }
+        h2 { text-align: center; color: #1c1e21; margin-bottom: 0.5rem; }
+        p { text-align: center; color: #606770; font-size: 0.9rem; margin-bottom: 1.5rem; }
+        .form-group { margin-bottom: 1.2rem; }
+        label { display: block; margin-bottom: 0.4rem; color: #4b4f56; font-weight: 600; font-size: 0.9rem; }
+        input { width: 100%; padding: 0.75rem; border: 1px solid #dddfe2; border-radius: 6px; box-sizing: border-box; font-size: 1rem; }
+        input:focus { outline: none; border-color: #1877f2; box-shadow: 0 0 0 2px #e7f3ff; }
+        button { width: 100%; padding: 0.8rem; background-color: #42b72a; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1.1rem; font-weight: bold; margin-top: 0.5rem; }
+        button:hover { background-color: #36a420; }
+        .footer-link { text-align: center; margin-top: 1.5rem; font-size: 0.9rem; border-top: 1px solid #dadde1; padding-top: 1rem; }
+        .footer-link a { color: #1877f2; text-decoration: none; }
+        .footer-link a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<div class="signup-container">
+    <h2>Sign Up</h2>
+    <p>It's quick and easy.</p>
+    
+    <form action="/signup" method="POST">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="Choose a username" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="New password" required>
+        </div>
+
+        <div class="form-group">
+            <label for="confirm_password">Confirm Password</label>
+            <input type="password" id="confirm_password" name="confirm_password" placeholder="Repeat password" required>
+        </div>
+
+        <button type="submit">Sign Up</button>
+    </form>
+
+    <div class="footer-link">
+        Already have an account? <a href="/signin">Sign in</a>
+    </div>
+</div>
+
+</body>
+</html>

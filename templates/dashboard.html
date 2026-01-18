@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: #f8f9fa; display: flex; }
+        .sidebar { width: 250px; background: #2c3e50; color: white; height: 100vh; padding: 20px; box-sizing: border-box; }
+        .main-content { flex-grow: 1; padding: 40px; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #dee2e6; padding-bottom: 20px; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-top: 20px; }
+        .user-badge { background: #e7f3ff; color: #1877f2; padding: 5px 15px; border-radius: 20px; font-weight: bold; }
+        .logout-btn { background: #dc3545; color: white; text-decoration: none; padding: 10px 20px; border-radius: 5px; font-size: 0.9rem; transition: background 0.3s; }
+        .logout-btn:hover { background: #c82333; }
+        nav ul { list-style: none; padding: 0; }
+        nav ul li { padding: 15px 0; border-bottom: 1px solid #34495e; }
+        nav ul li a { color: #bdc3c7; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>MyApp</h2>
+    <nav>
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Profile</a></li>
+            <li><a href="#">Settings</a></li>
+        </ul>
+    </nav>
+</div>
+
+<div class="main-content">
+    <div class="header">
+        <h1>Welcome back, <span class="user-badge">{{ username }}</span></h1>
+        <a href="/logout" class="logout-btn">Logout</a>
+    </div>
+
+    <div class="card">
+        <h3>Your Statistics</h3>
+        <p>Account Status: <strong>Active</strong></p>
+        <p>Last Login: Today</p>
+    </div>
+
+    <div class="card">
+        <h3>Secure Token Info</h3>
+        <p>Your session is currently protected by an <strong>HTTP-Only Cookie</strong>. This means your token is invisible to browser scripts.</p>
+    </div>
+</div>
+
+</body>
+</html>
